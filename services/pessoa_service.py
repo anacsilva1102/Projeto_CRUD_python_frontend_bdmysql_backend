@@ -24,4 +24,4 @@ class PessoaService:
 
     # serviço excluir
     def excluir(self, db, id):
-        return self.repo.excluir(db, id)
+        return self.repo.excluir(db, id).
