@@ -14,14 +14,13 @@ class CorridaController:
         return self.servico.listar_id(db, id)
     
     #controle cadastrar
-    def cadastrar(self, db, pessoa):
-        return self.servico.cadastrar(db, pessoa)
+    def cadastrar(self, db, corrida):
+        return self.servico.cadastrar(db, corrida)
 
-  # controller alterar pessoa
-    def alterar(self, db, id, pessoa):
-        return self.servico.alterar(db, id, pessoa)
+    # controller alterar corrida
+    def alterar(self, db, id, corrida):
+        return self.servico.alterar(db, id, corrida)
 
-
-    # controller excluir pessoa
+    # controller excluir corrida
     def excluir(self, db, id):
         return self.servico.excluir(db, id)

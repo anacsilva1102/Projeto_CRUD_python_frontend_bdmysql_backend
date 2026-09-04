@@ -11,5 +11,3 @@ class Corrida(Base):
     distancia_5km = Column(Boolean)
     distancia_10km = Column(Boolean)
     distancia_25km = Column(Boolean)
-    
-    

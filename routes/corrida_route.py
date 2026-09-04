@@ -3,8 +3,6 @@ from sqlalchemy.orm import Session
 
 from database import SessionLocal
 
-from controllers.pessoa_controller import PessoaController
-from schemas.pessoa_schema import PessoaSchema
 from controllers.corrida_controller import CorridaController
 from schemas.corrida_schema import CorridaSchema
 
