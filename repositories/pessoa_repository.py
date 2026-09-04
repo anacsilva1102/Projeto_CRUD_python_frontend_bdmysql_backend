@@ -2,24 +2,40 @@ from sqlalchemy.orm import Session
 from models.pessoa_model import Pessoa
 
 class PessoaRepository:
-    #listar todas as pessoas
+
     def listar(self, db: Session):
-        return db.query(Pessoa).all()
-    
-    #cadastra Pessoa
+        pessoas = db.query(Pessoa).all()
+
+        for pessoa in pessoas:
+            if pessoa.peso and pessoa.altura and float(pessoa.altura) > 0:
+                pessoa.imc = round(
+                    float(pessoa.peso) / (float(pessoa.altura) * float(pessoa.altura)), 2
+                )
+
+        return pessoas
+
     def cadastar(self, db: Session, pessoa):
+        imc = 0
+
+        if pessoa.peso > 0 and pessoa.altura > 0:
+            imc = round(
+                pessoa.peso / (pessoa.altura * pessoa.altura), 2
+            )
+
         nova_pessoa = Pessoa(
-            nome = pessoa.nome,
-            cpf = pessoa.cpf,
-            data_nascimento = pessoa.data_nascimento,
-            peso = pessoa.peso,
-            altura = pessoa.altura,
-            sexo = pessoa.sexo,
-            cep = pessoa.cep,
-            rua_logradouro = pessoa.rua_logradouro,
-            bairro = pessoa.bairro,
-            cidade = pessoa.cidade,
-            uf = pessoa.uf
+            nome=pessoa.nome,
+            sexo=pessoa.sexo,
+            datanascimento=pessoa.datanascimento,
+            idade=pessoa.idade,
+            peso=pessoa.peso,
+            altura=pessoa.altura,
+            imc=imc,
+            cpf=pessoa.cpf,
+            cep=pessoa.cep,
+            rua=pessoa.rua,
+            bairro=pessoa.bairro,
+            cidade=pessoa.cidade,
+            uf=pessoa.uf
         )
 
         db.add(nova_pessoa)
@@ -27,38 +43,49 @@ class PessoaRepository:
         db.refresh(nova_pessoa)
 
         return nova_pessoa
-    
-    #listar pessoa por id
+
     def pessoa_id(self, db: Session, id: int):
-        return db.query(Pessoa).filter(Pessoa.id == id).first()
-    
-    #alterar pessoa
-    def alterar (self, db: Session, id: int, pessoa):
+        return db.query(Pessoa).filter(Pessoa.idpessoa == id).first()
+
+    def alterar(self, db: Session, id: int, pessoa):
         pessoa_bd = self.pessoa_id(db, id)
 
+        if pessoa_bd is None:
+            return {"Mensagem": "Atleta não encontrado"}
+
+        imc = 0
+
+        if pessoa.peso > 0 and pessoa.altura > 0:
+            imc = round(
+                pessoa.peso / (pessoa.altura * pessoa.altura), 2
+            )
+
         pessoa_bd.nome = pessoa.nome
-        pessoa_bd.cpf = pessoa.cpf
-        pessoa_bd.data_nascimento = pessoa.data_nascimento
+        pessoa_bd.sexo = pessoa.sexo
+        pessoa_bd.datanascimento = pessoa.datanascimento
+        pessoa_bd.idade = pessoa.idade
         pessoa_bd.peso = pessoa.peso
         pessoa_bd.altura = pessoa.altura
-        pessoa_bd.sexo = pessoa.sexo
+        pessoa_bd.imc = imc
+        pessoa_bd.cpf = pessoa.cpf
         pessoa_bd.cep = pessoa.cep
-        pessoa_bd.rua_logradouro = pessoa.rua_logradouro
+        pessoa_bd.rua = pessoa.rua
         pessoa_bd.bairro = pessoa.bairro
         pessoa_bd.cidade = pessoa.cidade
-        pessoa_bd.uf = pessoa.uf        
-        
+        pessoa_bd.uf = pessoa.uf
+
         db.commit()
         db.refresh(pessoa_bd)
-        
-        return pessoa_bd
-    
-    #excluir pessoa
-    def excluir (self, db: Session, id: int):
-       pessoa_bd = self.pessoa_id(db, id)
-       
-       db.delete(pessoa_bd)
-       db.commit()
 
-       return{"Mensagem": "Pessoa Excluída com Sucesso!!"}
-   
+        return pessoa_bd
+
+    def excluir(self, db: Session, id: int):
+        pessoa_bd = self.pessoa_id(db, id)
+
+        if pessoa_bd is None:
+            return {"Mensagem": "Atleta não encontrado"}
+
+        db.delete(pessoa_bd)
+        db.commit()
+
+        return {"Mensagem": "Pessoa Excluída com Sucesso!!"}
